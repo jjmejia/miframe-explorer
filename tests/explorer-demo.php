@@ -28,12 +28,11 @@ body {
 	font-size: 14px;
 	line-height: 1.5;
 	word-wrap: break-word;
-	/* padding:0 20px; */
 	}
 h1 {
-    padding-bottom: .3em;
-    font-size: 2em;
-    border-bottom: 1px solid hsla(210,18%,87%,1);
+	padding-bottom: .3em;
+	font-size: 2em;
+	border-bottom: 1px solid hsla(210,18%,87%,1);
 	}
 .x-explorer {
 	background-color: #f4f4f4;
@@ -44,7 +43,7 @@ h1 {
 
 <h1>Test DocSimple</h1>
 
-<p>Uso:</p`>
+<p>Uso:</p>
 <pre class="code">
 	$explorer = new \miFrame\Utils\Explorer();
 	$documento = $explorer->exploreHTML();
