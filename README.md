@@ -51,4 +51,6 @@ El script [tests/explorer-demo.php](https://github.com/jjmejia/miframe-explorer/
 
 ## Importante!
 
+Los iconos SVG usados han sido tomados de la página [Bootstrap Icons](https://icons.getbootstrap.com/).
+
 Esta librería forma parte de los módulos PHP incluidos en [micode-manager](https://github.com/jjmejia/micode-manager).
