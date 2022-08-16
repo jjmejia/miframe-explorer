@@ -7,8 +7,8 @@ Permite declarar enlaces favoritos para accesos rápidos, que son almacenados en
 La navegación en línea se realiza mediante el uso de los parámetros post:
 
 - dir: Path a explorar (descendiente del directorio raíz)
-- addfav: URL a adicionar a favoritos.
-- remfav: URL a remover de favoritos.
+- favadd: URL a adicionar a favoritos.
+- favrem: URL a remover de favoritos.
 
 Se puede generar toda la navegación usando los estilos propietarios o pueden ser personalizados.
 
@@ -54,3 +54,5 @@ El script [tests/explorer-demo.php](https://github.com/jjmejia/miframe-explorer/
 Los iconos SVG usados han sido tomados de la página [Bootstrap Icons](https://icons.getbootstrap.com/).
 
 Esta librería forma parte de los módulos PHP incluidos en [micode-manager](https://github.com/jjmejia/micode-manager).
+
+Documentación adicional, anécdotas y temas relacionados en el [Blog micode-manager](https://micode-manager.blogspot.com/)

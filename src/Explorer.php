@@ -7,12 +7,11 @@
  * La navegación en línea se realiza mediante el uso de los parámetros post:
  *
  * - dir: Path a explorar (descendiente del directorio raíz)
- * - addfav: URL a adicionar a favoritos.
- * - remfav: URL a remover de favoritos.
+ * - favadd: URL a adicionar a favoritos.
+ * - favrem: URL a remover de favoritos.
  *
  * Se puede generar toda la navegación usando los estilos propietarios o pueden ser personalizados.
  *
- * @uses miframe/common/functions
  * @author John Mejia
  * @since Julio 2022
  */
@@ -38,6 +37,7 @@ class Explorer {
 	private $basedir = '';
 	private $root = '';
 	private $arreglofav = array();	// Arreglo de favoritos
+	private $documentar = array();
 
 	public $fileFavorites = '';
 	public $useFavorites = true;
@@ -93,6 +93,22 @@ class Explorer {
 	}
 
 	/**
+	 * Configura enlaces a usar para visualizar documentación de scripts.
+	 * $url debe permitir concatenar el nombre del archivo a documentar (debería terminar en "var=")
+	 *
+	 * @param string $extension Extension asociada.
+	 * @param string $url URL para visualizar documentación.
+	 */
+	public function setDocumentationLink(string $extension, string $url) {
+
+		$url = trim($url);
+		$extension = strtolower(trim($extension));
+		if ($extension != '' && $url != '') {
+			$this->documentar[$extension] = $url;
+		}
+	}
+
+	/**
 	 * Recupera el listado de archivos o contenido asociado a un archivo.
 	 *
 	 * @param string $baselink Enlace principal. A este enlace se suman los parámetros para navegación en línea.
@@ -115,10 +131,13 @@ class Explorer {
 		// Path a mostrar
 		if (isset($_REQUEST['dir'])) {
 			$this->basedir = trim($_REQUEST['dir']);
+			while (substr($this->basedir, -1, 1) == '/') {
+				$this->basedir = substr($this->basedir, 0, -1);
+			}
 		}
 		// Adicionar favorito
-		elseif (isset($_REQUEST['addfav'])) {
-			$favorito = strtolower(trim($_REQUEST['addfav']));
+		elseif (isset($_REQUEST['favadd'])) {
+			$favorito = strtolower(trim($_REQUEST['favadd']));
 			if (file_exists($this->root . $favorito) && is_file($this->root . $favorito)) {
 				$this->basedir = dirname($favorito);
 				// Adiciona a favoritos.ini
@@ -131,8 +150,8 @@ class Explorer {
 			}
 		}
 		// Retirar favorito
-		elseif (isset($_REQUEST['remfav'])) {
-			$favorito = strtolower(trim($_REQUEST['remfav']));
+		elseif (isset($_REQUEST['favrem'])) {
+			$favorito = strtolower(trim($_REQUEST['favrem']));
 			if ($favorito != '') {
 				$this->basedir = dirname($favorito);
 				$pos = array_search($favorito, $this->arreglofav);
@@ -164,8 +183,6 @@ class Explorer {
 			}
 			else {
 				// Intenta salirse del directorio web
-				// echo "$root<hr>$real<hr>";
-				// miframe_error("Error: Path indicado ($basedir) no es valido. <a href=\"index.php\">Volver al Inicio</a>");
 				return false;
 			}
 		}
@@ -234,7 +251,7 @@ class Explorer {
 					if (in_array($extension, [ 'html', 'htm', 'php' ])) {
 						if ($this->useFavorites && !in_array($ufilename, $this->arreglofav)) {
 							$salida['files'][$ufilename] = '<a href="' . $this->url($filename) . '">' . basename($filename) . '</a>';
-							$salida['favorites-add'][$ufilename] = $baselink . 'addfav=' . urlencode($filename);
+							$salida['favorites-add'][$ufilename] = $baselink . 'favadd=' . urlencode($filename);
 						}
 						else {
 							$salida['files'][$ufilename] = '<a href="' . $filename . '"><b>' . basename($filename) . '</b></a>';
@@ -253,7 +270,7 @@ class Explorer {
 			if (count($this->arreglofav) > 0) {
 				foreach ($this->arreglofav as $k => $ufilename) {
 					$salida['favorites'][$ufilename] = '<a href="' . $ufilename . '">' . str_replace('/', ' / ', $ufilename) . '</a>';
-					$salida['favorites-rem'][$ufilename] = $baselink . 'remfav=' . urlencode($ufilename);
+					$salida['favorites-rem'][$ufilename] = $baselink . 'favrem=' . urlencode($ufilename);
 				}
 				// echo '<hr size="1" style="color:#ccc">';
 			}
@@ -301,7 +318,7 @@ class Explorer {
 			return $salida;
 		}
 
-		$salida = $this->showStyles();
+		$salida = $this->getStylesCSS();
 
 		if (isset($listado['paths'])) {
 			$salida .= '<p>' . implode(' / ', $listado['paths']) . '</p>';
@@ -329,6 +346,19 @@ class Explorer {
 			$salida .= '<div class="x-folder"><i class="bi bi-folder-fill"></i> ' . $enlace . '</div>';
 		}
 		foreach ($listado['files'] as $ufilename => $enlace) {
+			$extension = strtolower(pathinfo($this->root . $ufilename, PATHINFO_EXTENSION));
+			if (isset($this->documentar[$extension])) {
+				$dirback = '';
+				if (isset($_REQUEST['dir'])) {
+					$dirback = trim($_REQUEST['dir']);
+				}
+				$enlace .= ' <a href="' .
+					str_replace(array('{file}', '{dir}'),
+						array(urlencode($ufilename), urlencode($dirback)),
+						$this->documentar[$extension]
+					) .
+					'" class="x-favlink">[Ver documentación]</a>';
+			}
 			if (isset($listado['favorites-add'][$ufilename])) {
 				$enlace .= ' <a href="' . $listado['favorites-add'][$ufilename] . '" class="x-favlink" title="Adicionar a favoritos"><i class="bi bi-plus-circle"></i></a>';
 			}
@@ -342,6 +372,8 @@ class Explorer {
 
 	/**
 	 * Retorna el path real del DOCUMENT ROOT, en el formato requerido para validaciones.
+	 * Use las palabras '{file}' y '{dir}' para que sean buscadas en el enlace y remplazadas por el nombre
+	 * del archivo asociado y el directorio actual.
 	 *
 	 * @return string Path.
 	 */
@@ -409,7 +441,7 @@ class Explorer {
 	 *
 	 * @return string Estilos o link a usar.
 	 */
-	private function showStyles() {
+	private function getStylesCSS() {
 
 		$salida = '';
 		if ($this->styles_ignore) { return $salida; }
