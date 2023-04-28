@@ -456,8 +456,7 @@ class Explorer {
 							// No definido (usa DOWN por defecto)
 							$salida['content'] = '<b>Error:</b> Tipo "' . $this->showContentsFor[$extension] . '" no valido<p><a href="' . $this->url() . '">Descargar ' . basename($this->filename) . '</a>';
 							$salida['class'] = 'down';
-							}
-
+						}
 				}
 			}
 			else {
@@ -467,6 +466,7 @@ class Explorer {
 					$contenido = @file_get_contents($filename_full);
 				}
 				$salida['content'] = call_user_func($this->showContentsFor[$extension]['fun'], $contenido);
+				$salida['class'] = strtolower($extension);
 			}
 		}
 

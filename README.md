@@ -23,14 +23,14 @@ Se provee igualmente una clase para su visualización y uso directo en la pantal
 ser usada como guía para desarrollar su propia librería de presentación. Puede usarse así:
 
     $explorer = new \miFrame\Utils\ExplorerHTML();
-    $explorer->render();
+    echo $explorer->render();
 
 También puede mejorar la visualización del contenido de archivos con formato Markdown, relacionando una librería
-externa para tal fin. Por ejemplo, para relacionar la librería *Parsedown* (que puede descargar desde [https://github.com/erusev/parsedown/](https://github.com/erusev/parsedown/)):
+externa para tal fin. El siguiente ejemplo, relaciona la librería *Parsedown* (que puede descargar desde [https://github.com/erusev/parsedown/](https://github.com/erusev/parsedown/)):
 
     $parser = new Parsedown();
     $explorer->parserTextFunction = array($parser, 'text');
-    $explorer->render();
+    echo $explorer->render();
 
 ## Class miFrame\Explorer\Explorer
 
@@ -54,6 +54,7 @@ Métodos relevantes:
 Métodos relevantes:
 
 * `setBaseLink` -- Enlace principal. A este enlace se suman los parámetros para navegación en línea.
+* `setFilenameCSS`-- Asigna la ubicación del archivo de estilos CSS a usar. Puede indicarse una URL usando el prefijo "url:[path]".
 * `render` -- Genera presentación del listado de archivos o contenido asociado a un archivo, en formato HTML.
 
 ## Demo
