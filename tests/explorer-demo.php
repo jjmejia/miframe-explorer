@@ -6,13 +6,17 @@
  * @since Julio 2022
  */
 
-include __DIR__ . '/../src/explorer.php';
+include __DIR__ . '/../shared/functions.php';
+include __DIR__ . '/../traits/HTMLSupportTrait.php';
+include __DIR__ . '/../src/Explorer.php';
+include __DIR__ . '/../src/ExplorerHTML.php';
 
-$explorer = new \miFrame\Utils\Explorer();
+$explorer = new \miFrame\Explorer\ExplorerHTML();
 
 $explorer->setRoot('..');
 $infopath = $explorer->getRoot();
-$documento = $explorer->exploreHTML(basename(__FILE__));
+$explorer->setBaseLink(basename(__FILE__));
+// $documento = $explorer->explore(basename(__FILE__));
 
 ?>
 <!DOCTYPE html>
@@ -45,14 +49,14 @@ h1 {
 
 <p>Uso:</p>
 <pre class="code">
-	$explorer = new \miFrame\Utils\Explorer();
-	$documento = $explorer->exploreHTML();
+	$explorer = new \miFrame\Explorer\ExplorerHTML();
+	$explorer->render();
 </pre>
 <p>
 	Explorar: <b><?= $infopath ?></b>
 </p>
 
-<?= $documento ?>
+<?= $explorer->render() ?>
 
 </body>
 </html>

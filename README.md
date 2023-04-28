@@ -2,48 +2,59 @@
 
 Clase para explorar directorios y consultar archivos en línea.
 
-Permite declarar enlaces favoritos para accesos rápidos, que son almacenados en el archivo "favoritos.ini", por defecto generado en el directorio raíz (requiere permisos de escritura).
+Permite declarar enlaces favoritos para accesos rápidos, que son almacenados en el archivo "favoritos.ini", por
+defecto generado en el directorio raíz (requiere permisos de escritura).
 
 La navegación en línea se realiza mediante el uso de los parámetros post:
 
 - dir: Path a explorar (descendiente del directorio raíz)
 - favadd: URL a adicionar a favoritos.
 - favrem: URL a remover de favoritos.
+- file: Nombre del archivo a mostrar información del contenido (según el tipo de archivo).
 
 Se puede generar toda la navegación usando los estilos propietarios o pueden ser personalizados.
 
 Uso:
 
     $explorer = new \miFrame\Utils\Explorer();
-    echo $doc->exploreHTML();
+    $files = $explorer->explore();
 
-Puede mejorar la interpretación del contenido de archivos con formato Markdown, usando una librería externa para tal fin. Por ejemplo:
+Se provee igualmente una clase para su visualización y uso directo en la pantalla del navegador, que puede
+ser usada como guía para desarrollar su propia librería de presentación. Puede usarse así:
+
+    $explorer = new \miFrame\Utils\ExplorerHTML();
+    $explorer->render();
+
+También puede mejorar la visualización del contenido de archivos con formato Markdown, relacionando una librería
+externa para tal fin. Por ejemplo, para relacionar la librería *Parsedown* (que puede descargar desde [https://github.com/erusev/parsedown/](https://github.com/erusev/parsedown/)):
 
     $parser = new Parsedown();
     $explorer->parserTextFunction = array($parser, 'text');
+    $explorer->render();
 
-Puede consultar y descargar la librería *Parsedown* de [https://github.com/erusev/parsedown/](https://github.com/erusev/parsedown/).
-
-## Class miFrame\Utils\Explorer
+## Class miFrame\Explorer\Explorer
 
 Las siguientes propiedades públicas pueden ser usadas:
 
-* `$fileFavorites`: Path del archivo "favoritos.ini" (por defecto se almacena en el directorio raíz).
+* `$baselink`: Enlace principal. A este enlace se suman los parámetros para navegación en línea
 * `$useFavoritos`: TRUE para habilitar las opciones de Favoritos, esto es, visualizar en la navegación y actualizar archivo .ini.
 * `$parserTextFunction`: Función a usar para interpretar el texto (asumiendo formato Markdown). Retorna texto HTML. Ej:
 
     function (text) { ... return $html; }
 
-* `$stylesCSS`: string. Estilos CSS a usar. Si emplea un archivo externo, use: "url:(path)".
-* `$styles_ignore`: boolean. Indica si debe ignorar estilos internos (automáticamente se fija a TRUE luego de imprimir estilos).
-* `$showContentsFor`: array. Extensiones para las que se muestra el contenido. Por defecto se habilita para las siguientes extensiones: 'txt', 'jpg', 'jpeg', 'gif', 'svg', 'pdf', 'ico', 'png', 'md', 'ini', 'json'.
-
 Métodos relevantes:
 
 * `explore` -- Recupera el listado de archivos o contenido asociado a un archivo.
-* `exploreHTML` -- Recupera el listado de archivos o contenido asociado a un archivo, en formato HTML.
 * `getRoot` -- Retorna el Path real usado como directorio raíz.
-* `setRoot` -- Define el directorio raíz.
+* `setRoot` -- Asigna el directorio raíz (sólo muestra directorios y archivos contenidos en este directorio).
+
+
+## Class miFrame\Explorer\ExplorerHTML
+
+Métodos relevantes:
+
+* `setBaseLink` -- Enlace principal. A este enlace se suman los parámetros para navegación en línea.
+* `render` -- Genera presentación del listado de archivos o contenido asociado a un archivo, en formato HTML.
 
 ## Demo
 
